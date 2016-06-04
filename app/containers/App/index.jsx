@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
-import { MyComponent } from '../../components';
+import React, { Component } from 'react'
+import { ClickMe, MyComponent} from '../../components'
 
-import './index.css';
+
+import './index.css'
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div>
@@ -17,8 +14,8 @@ class App extends Component {
           https://github.com/GuoYongfeng
         </p>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App

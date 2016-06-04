@@ -8,7 +8,7 @@ props = {
   title: 'this is the default value!',
 }
 ```
-气死我了，文档有错，在es6中，定义默认props要写在类的外面：
+文档有错，在es6中，定义默认props要写在类的外面：
 ```
 class Counter extends Component {
   ......
