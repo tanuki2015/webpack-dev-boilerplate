@@ -102,3 +102,6 @@ handleClick = (e) => {
   });
 }
 ```
+
+-------
+### 我去，今天这个坑大呀，表单form写成from，然后点击submit没有效果:sweat:
