@@ -1,6 +1,6 @@
 ## 根据这个文档学习的一些问题
 
-props 是组件中的一个对象，由主render方法传入的参数作为他的key value.不可以在组件中设置初始值：
+props 是组件中的一个对象，由主render方法传入的参数作为他的key value. 设置初始值必须用static defaultProps方法：
 ```
 //  wrong
 
@@ -105,3 +105,98 @@ handleClick = (e) => {
 
 -------
 ### 我去，今天这个坑大呀，表单form写成from，然后点击submit没有效果:sweat:
+
+## event
+
+```
+import React, { Component } from 'react'
+
+import './index.css'
+
+class MyComponent extends Component {
+  state = {
+    inputValue: 'input value',
+    selectValue: 'A',
+    radioValue: 'B',
+    textareValue: 'some text here...',
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault(); // 停掉默认提交表单的动作
+    console.log('form submitting...');
+    console.log(e);
+  }
+
+  handleInput = (e) => {
+    this.setState({
+      inputValue: e.target.value,
+      // 真他妈的见鬼了，这里报错 value undefined，搞了一个小时， 刷新后莫名其妙的又好了！
+    })
+  }
+
+  handleSelect = (e) => {
+    this.setState({
+      selectValue: e.target.value,
+    })
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input type="text" value={this.state.inputValue} onChange={this.handleInput}/>
+        <br/>
+        <select value={this.state.selectValue} onChange={this.handleSelect}>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+          <option value="E">E</option>
+        </select>
+        <br/>
+        <p>radio button</p>
+        <input name="goodRadio" type="radio" value="A"/>
+        <input name="goodRadio" type="radio" value="B"/>
+        <input name="goodRadio" type="radio" value="C"/>
+        <br/>
+          <input name="goodRadio" type="checkbox" value="A"/>
+          <input name="goodRadio" type="checkbox" value="B"/>
+          <input name="goodRadio" type="checkbox" value="C"/>
+        <br/>
+        <textarea value={this.state.textareValue}></textarea>
+        <button type="submit">确认提交</button>
+      </form>
+    )
+  }
+}
+
+export default MyComponent
+
+```
+
+关于事件的代码，可以发现，当元素中使用了value时，就必须使用onChange方法。那多个元素设置了value，
+就得有多个onChange事件，这显然太笨了，于是，就有了下面的用ref获取元素节点的方法，可以一次直接
+得到这个元素及他的所有属性。
+
+## ref 用于获取真实的dom节点，虚拟dom拿不到的，而且必须在dom上设置ref属性
+比如上面表单中有一个input`<input type="text" ref="goodInput" defaultValue={this.state.inputValue} />`
+
+那么可以用`this.refs.goodInput` 来得到这个dom元素，用 `this.refs.goodInput.value`来得到这个dom的属性，
+不需要用findDOMNode()方法。
+
+### 注意： radio button 和 checkbox 还是使用onChange比较好
+
+这样可以得到所有的表单数据：
+```
+handleSubmit = (e) => {
+  e.preventDefault(); // 停掉默认提交表单的动作
+  console.log('form submitting...');
+  const formData = {
+    input: this.refs.goodInput.value,
+    select: this.refs.goodSelect.value,
+    textarea: this.refs.goodTextarea.value,
+  }
+  console.log(formData);
+}
+```
+
+### 还需要注意，这个脚手架会热更新代码，但是，需要手动刷新才能重新应用，刚才提交的表单数据出不来，也是因为没有刷新的缘故。

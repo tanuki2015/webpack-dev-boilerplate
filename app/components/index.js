@@ -1,4 +1,4 @@
 'use strict';
 
-export MyComponent from './MyComponent/index.jsx';
+export { MyComponent, RadioBtn } from './MyComponent/index.jsx';
 export ClickMe from './clickcount/index.jsx';
