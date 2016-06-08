@@ -177,13 +177,14 @@ export default MyComponent
 就得有多个onChange事件，这显然太笨了，于是，就有了下面的用ref获取元素节点的方法，可以一次直接
 得到这个元素及他的所有属性。
 
-## ref 用于获取真实的dom节点，虚拟dom拿不到的，而且必须在dom上设置ref属性
+## ref 用于获取真实的dom节点，而且必须在dom上设置ref属性，貌似以前的版本虚拟dom拿不到的，要用getDomNode方法转换，现在可以直接拿
+
 比如上面表单中有一个input`<input type="text" ref="goodInput" defaultValue={this.state.inputValue} />`
 
 那么可以用`this.refs.goodInput` 来得到这个dom元素，用 `this.refs.goodInput.value`来得到这个dom的属性，
 不需要用findDOMNode()方法。
 
-### 注意： radio button 和 checkbox 还是使用onChange比较好
+### 注意： radio button 和 checkbox 还是使用onChange比较好，用ref的话需要给太多的ref命名，较麻烦
 
 这样可以得到所有的表单数据：
 ```
@@ -200,3 +201,41 @@ handleSubmit = (e) => {
 ```
 
 ### 还需要注意，这个脚手架会热更新代码，但是，需要手动刷新才能重新应用，刚才提交的表单数据出不来，也是因为没有刷新的缘故。
+
+### 感觉用es5的语法，会跟容易理解react的流程。
+
+比如 props 可以把组件理解为一个函数，实际上确实是函数，然后在渲染的时候调用这个函数，同时传参，这个参数
+在函数中用props拿到，类似arguments，实际上props就是这么简单：
+```
+var SubComponent = React.createClass({
+  render: function() {
+    var words = this.props.message
+    return <p>I want to say {words} </p>
+  }
+  })
+
+  // 在调用的render中：
+  ...
+  return <SubComponent message="hi react world!" />
+  ...
+  // 这段代码没用运行过，只是演示一下思路
+```
+
+## 用mixin实现双向数据流
+具体思路是使用mixin的插件后，组件中就有likeState方法，把state中的key传递给他，然后给input添加
+valueLink属性
+```
+<input type="text" valueLink={this.likeState('message')} />
+```
+
+checkbox需要使用checkLink属性
+
+```
+<input type="checkbox" checkLink={this.likeState('isOk')} />
+```
+### 这是es5的写法，es6目前不支持，需要学习redux
+
+## 生命周期
+componentWillMount 中设置state值，可以避免多次渲染。
+componentDidMount 中可以拿到domNode，进行ajax操作等。
+componentWillMount 用于卸载组件，清空定时器（防止内存泄漏），清掉事件监听。
